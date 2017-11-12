@@ -6,11 +6,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <tuple>
 
 using namespace std;
 
-typedef string RAonDuty;
 typedef int date[2];
 
 class DutyCalendar{
@@ -23,10 +21,12 @@ public:
 	int getPtsLeft(){return ptsLeft;}
 	void setRAonDuty(string name, date duty);
 	string getRAonDuty(date duty);
+	int checkDayOfWeek(date day);
+	void generateDutySchedule();
 
 private:
-	int monthLength[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
-	int yearStart = 1;
+	int monthLength[12] = {31,28,31,30,31,30,31,31,30,31,30,31}; //List of the number of days in each month
+	int yearStart = 1; //Value from 1-7 corresponding to the first day of the week of the year (1=Sunday, 7=Saturday)
 	vector<vector<string> > duty_cal;
 	int totalPts;
 	int ptsLeft;

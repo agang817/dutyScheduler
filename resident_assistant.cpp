@@ -11,7 +11,6 @@ void ResidentAssistant::initRA(string name, int prefs[]){
 	for (int i=0; i<7; i++){
 		preferences[i] = prefs[i];
 	}
-	cout<<RAname;
 }
 
 void ResidentAssistant::setName(string name){RAname = name;}
@@ -28,3 +27,9 @@ int ResidentAssistant::getSelectionScore(){return selectionScore;}
 
 int ResidentAssistant::getPref(int weekDay){if (weekDay >= 0 && weekDay <= 7){return preferences[weekDay];}}
 void ResidentAssistant::setPref(int weekDay, int pref){if (weekDay >= 0 && weekDay <= 7){preferences[weekDay] = pref;}}
+
+float ResidentAssistant::calcSelectionWeight(int weekDay, int recent){
+	float w;
+	w = (weightConsts[0]*preferences[weekDay])+(weightConsts[1]*selectionScore)+(weightConsts[2]*currentPoints)+(weightConsts[3]*recent);
+	return w;
+}

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef RESIDENTASISTANT_H
 #define RESIDENTASSISTANT_H
 
@@ -24,6 +25,7 @@ public:
 	int getSelectionScore();
 	int getPref(int weekDay);
 	void setPref(int weekDay, int pref);
+	float calcSelectionWeight(int weekDay, int recent);
 
 private:
 	string RAname;
@@ -31,6 +33,11 @@ private:
 	int pointGoal;
 	int currentPoints = 0;
 	int selectionScore = 0;
+
+	//Constants used in the RA weight calculations
+	//Order is {preferences, currentScore, currentPts, recentDuty}
+	//Weights were selected to put the highest emphasis on RA preferences
+	float weightConsts[4] = {0.7, 0.1, 0.1, 0.1};
 };
 
 #endif
