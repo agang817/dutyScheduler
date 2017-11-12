@@ -11,7 +11,7 @@ using namespace std;
 
 int main(){
 	int pref_array[] = {1,2,3,4,5,6,7};
-	int testStart[] = {9,12};
+	int testStart[] = {9,2};
 	int testEnd[] = {12,16};
 	int checkDate[] = {10,10};
 	string staff_info = "test_staff.txt";
@@ -23,7 +23,8 @@ int main(){
 	// testCal.setRAonDuty(testName, testStart);
 	// testCal.getRAonDuty(testStart);
 	DutyScheduler test_scheduler(staff_info, testStart, testEnd);
-	cout<<test_scheduler.checkDayOfWeek(testStart)<<endl;
+	test_scheduler.generateDutySchedule();
+	//cout<<test_scheduler.checkDayOfWeek(testStart)<<endl;
 	//test_scheduler.initStaff(staff_info);
 
 	//int testCalc;

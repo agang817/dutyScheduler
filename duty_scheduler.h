@@ -8,6 +8,7 @@
 #include <vector>
 #include "duty_calendar.h"
 #include "resident_assistant.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -16,16 +17,14 @@ public:
 	DutyScheduler(string filename, date start, date end);
 	void initStaff(string filename);
 	void setRAPointSplit();
-	void calcRAWeights(date day);
+	void calcRAWeights(date day, int weekDay);
+	void generateDutySchedule();
+	void scheduleDuty(date day);
+	int findMinWeight(int weekDay);
 
 private:
 	vector<ResidentAssistant> staffList;
 	vector<int> stillSelecting;
-
-	//Constants used in the RA weight calculations
-	//Order is {preferences, currentScore, currentPts, recentDuty}
-	//Weights were selected to put the highest emphasis on RA preferences
-	float weightConsts[4] = {0.7, 0.1, 0.1, 0.1};
 	float RAWeights[25] = {9999}; //Set all weights to a large value to star 
 	int staffSize;
 };

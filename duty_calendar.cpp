@@ -12,10 +12,9 @@ void DutyCalendar::initCalendar(date start, date end){
 	endDate[1] = end[1];
 
 	for (int i=0; i<12; i++){
-		tempMonth.resize(monthLength[i-1]);
+		tempMonth.resize(monthLength[i]);
 		duty_cal.push_back(tempMonth);
 	}
-
 }
 
 int DutyCalendar::calcTotalPts(){
@@ -25,18 +24,12 @@ int DutyCalendar::calcTotalPts(){
 		else if (i==endDate[0]){pts = pts + endDate[1];}
 		else{pts = pts + monthLength[i-1];}
 	}
-	totalPts = pts;
+	totalPts = pts + 1;
 	return totalPts;
 }
 
-void DutyCalendar::setRAonDuty(string name, date duty){
-	duty_cal[duty[0]-1][duty[1]] = name;
-}
-
-string DutyCalendar::getRAonDuty(date duty){
-	cout<< duty_cal[duty[0]-1][duty[1]];
-	return duty_cal[duty[0]-1][duty[1]];
-}
+void DutyCalendar::setRAonDuty(string name, date duty){duty_cal[duty[0]-1][duty[1]-1] = name;}
+string DutyCalendar::getRAonDuty(date duty){return duty_cal[duty[0]-1][duty[1]-1];}
 
 int DutyCalendar::checkDayOfWeek(date day){
 	//Return the day of week code for the input date
@@ -45,8 +38,29 @@ int DutyCalendar::checkDayOfWeek(date day){
 	for (int i=0; i<day[0]-1; i++){
 		dayOfWeek = dayOfWeek + monthLength[i];
 	}
-	dayOfWeek = dayOfWeek + day[1];
-	dayOfWeek = dayOfWeek%7;
+	dayOfWeek = (dayOfWeek + day[1])%7;
 	if (dayOfWeek == 0){dayOfWeek=7;}
 	return dayOfWeek;
+}
+
+void DutyCalendar::calcPrevDate(date day){
+	if (day[1]==1){
+		prevDate[0] = day[0]-1;
+		prevDate[1] = monthLength[day[0]-2];
+	}
+	else{
+		prevDate[0] = day[0];
+		prevDate[1] = day[1]-1;
+	}
+}
+
+void DutyCalendar::calcNextDate(date day){
+	if (day[1]>=monthLength[day[0]-1]){
+		nextDate[0] = day[0]+1; 
+		nextDate[1] = 1;
+	}
+	else{
+		nextDate[0] = day[0];
+		nextDate[1] = day[1]+1;
+	}
 }

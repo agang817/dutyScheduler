@@ -59,17 +59,76 @@ void DutyScheduler::setRAPointSplit(){
 	}
 }
 
-void DutyScheduler::calcRAWeights(date day){
-	int weekDay = checkDayOfWeek(day);
+void DutyScheduler::calcRAWeights(date day, int weekDay){
 	int numRAsLeft = stillSelecting.size();
-	int recentDuty = 0;
+	calcPrevDate(day);
+	date prev = {getPrevMonth(), getPrevDay()};
 	for (int i=0; i<numRAsLeft; i++){
 		int staffID = stillSelecting[i];
-		if (getRAonDuty(day) == staffList[staffID].RAname){recent = 100;}
-		RAWeights[staffID] = staffList[staffID].calcSelectionWeight(weekDay, recent);
+		int recentDuty = 0;
+		if (getRAonDuty(prev) == staffList[staffID].getName()){recentDuty = 999999;} //Check if the RA was scheduled for duty the night before
+		RAWeights[staffID] = staffList[staffID].calcSelectionWeight(weekDay, recentDuty);
+		if (staffList[staffID].getPref(weekDay) == 0){RAWeights[staffID] = 9999;}
 	}
 }
 
+int DutyScheduler::findMinWeight(int weekDay){
+	float minWeight = 99999;
+	int index = 0;
+
+	for (int i=0; i<staffSize; i++){
+		if (RAWeights[i]<minWeight){
+			index = i;
+			minWeight = RAWeights[i];
+		}
+		else if(RAWeights[i]==minWeight){
+			if(staffList[i].getCurrentPts()<staffList[index].getCurrentPts()){index = i;}
+			else if(staffList[i].getPref(weekDay)<staffList[index].getPref(weekDay)){index = i;}
+		}
+	}
+	return index;
+}
+
+void DutyScheduler::scheduleDuty(date day){
+	int endMonth = getEndMonth();
+	int endDay = getEndDay();
+	if (!((day[0]==endMonth)&&(day[1]>endDay))){
+		int staffID = 0;
+
+		int weekDay = checkDayOfWeek(day);
+		calcRAWeights(day, weekDay);
+
+		staffID = findMinWeight(weekDay);
+		setRAonDuty(staffList[staffID].getName(), day);
+		
+		staffList[staffID].setCurrentPts(1);
+		staffList[staffID].incSelectionScore(staffList[staffID].getPref(weekDay));
+		int pointsScheduled = getCurrentPts() + 1;
+		setCurrentPts(pointsScheduled);
+
+		cout<<day[0]<<"/"<<day[1]<<": "<<dayOfWeek[weekDay-1]<<": "<<staffList[staffID].getName()<<endl;
+
+		if (staffList[staffID].isDone()){
+			RAWeights[staffID] = 9999;
+			stillSelecting.erase(remove(stillSelecting.begin(), stillSelecting.end(), staffID));
+		}
+
+		if((pointsScheduled == getTotalPts())||stillSelecting.size()==0){return;}
+		calcNextDate(day);
+		date next = {getNextMonth(), getNextDay()};
+		scheduleDuty(next);
+	}
+	return;
+}
+
 void DutyScheduler::generateDutySchedule(){
-	
+	cout<<"Duty Schedule:\n";
+	setCurrentPts(0);
+	date start = {getStartMonth(), getStartDay()};
+	scheduleDuty(start);
+
+	cout<<"\nPoints scheduled for each RA:\n";
+	for (int i=0;i<staffSize;i++){
+		cout<<staffList[i].getName()<<": "<<staffList[i].getCurrentPts()<<endl;
+	}
 }
