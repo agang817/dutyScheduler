@@ -1,3 +1,13 @@
+/********************************************************************************************
+*
+*	resident_assistant.h
+*		created on: 11/11/18
+*		    Author: Alyssa Gang
+*	   Description: ResidentAssistant class definition, holds and maintains information
+*		            about a staff members duty scheduling preferences
+*
+********************************************************************************************/
+
 #pragma once
 #ifndef RESIDENTASISTANT_H
 #define RESIDENTASSISTANT_H
@@ -37,9 +47,10 @@ public:
 private:
 	string RAname;
 	int preferences[7] = {0};
-	int pointGoal;
-	int currentPoints = 0;
-	int selectionScore = 0;
+	
+	int pointGoal; //Points of duty the RA must fulfill
+	int currentPoints = 0; //Points of duty the RA is currently scheduled for
+	int selectionScore = 0; //Sum of the preference value fo each duty date scheduled
 
 	//Constants used in the RA weight calculations
 	//Order is {preferences, currentScore, currentPts, recentDuty}
