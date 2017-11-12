@@ -14,7 +14,6 @@ void DutyScheduler::initStaff(string fileName){ //initiallize the RAs on staff a
 	char c;
 	int tempPref[7];
 	ResidentAssistant tempRA;
-	string seperator = ":"; //Seperator between names and preferences in the txt file
 
 	ifstream fin;
 	fin.open(fileName.c_str());
@@ -24,10 +23,10 @@ void DutyScheduler::initStaff(string fileName){ //initiallize the RAs on staff a
 	}
 
 	while(fin>>temp){ //While there is more to read from the file
-		if (temp!=seperator){ //Read in RA name
+		if (temp!=":"){ //Read in RA name
 			tempName = temp;
 		}
-		else if (temp == seperator){ //Read in RA preferences
+		else{ //Read in RA preferences
 			for (int i=0;i<7;i++){
 				fin>>tempPref[i];
 			}
@@ -62,7 +61,7 @@ void DutyScheduler::setRAPointSplit(){
 void DutyScheduler::calcRAWeights(date day, int weekDay){
 	int numRAsLeft = stillSelecting.size();
 	calcPrevDate(day);
-	date prev = {getPrevMonth(), getPrevDay()};
+	date prev = {prevDate[0], prevDate[1]};
 	for (int i=0; i<numRAsLeft; i++){
 		int staffID = stillSelecting[i];
 		int recentDuty = 0;
@@ -90,21 +89,16 @@ int DutyScheduler::findMinWeight(int weekDay){
 }
 
 void DutyScheduler::scheduleDuty(date day){
-	int endMonth = getEndMonth();
-	int endDay = getEndDay();
-	if (!((day[0]==endMonth)&&(day[1]>endDay))){
-		int staffID = 0;
-
+	if (!((day[0]==endDate[0])&&(day[1]>endDate[1]))){
 		int weekDay = checkDayOfWeek(day);
 		calcRAWeights(day, weekDay);
 
-		staffID = findMinWeight(weekDay);
+		int staffID = findMinWeight(weekDay);
 		setRAonDuty(staffList[staffID].getName(), day);
 		
-		staffList[staffID].setCurrentPts(1);
+		staffList[staffID].incCurrentPts(1);
 		staffList[staffID].incSelectionScore(staffList[staffID].getPref(weekDay));
-		int pointsScheduled = getCurrentPts() + 1;
-		setCurrentPts(pointsScheduled);
+		setCurrentPts(currentPts + 1);
 
 		cout<<day[0]<<"/"<<day[1]<<": "<<dayOfWeek[weekDay-1]<<": "<<staffList[staffID].getName()<<endl;
 
@@ -113,9 +107,9 @@ void DutyScheduler::scheduleDuty(date day){
 			stillSelecting.erase(remove(stillSelecting.begin(), stillSelecting.end(), staffID));
 		}
 
-		if((pointsScheduled == getTotalPts())||stillSelecting.size()==0){return;}
+		if((currentPts == getTotalPts())||stillSelecting.size()==0){return;}
 		calcNextDate(day);
-		date next = {getNextMonth(), getNextDay()};
+		date next = {nextDate[0], nextDate[1]};
 		scheduleDuty(next);
 	}
 	return;
@@ -124,8 +118,7 @@ void DutyScheduler::scheduleDuty(date day){
 void DutyScheduler::generateDutySchedule(){
 	cout<<"Duty Schedule:\n";
 	setCurrentPts(0);
-	date start = {getStartMonth(), getStartDay()};
-	scheduleDuty(start);
+	scheduleDuty(startDate);
 
 	cout<<"\nPoints scheduled for each RA:\n";
 	for (int i=0;i<staffSize;i++){

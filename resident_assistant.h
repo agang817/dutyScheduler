@@ -25,7 +25,7 @@ public:
 	void setGoalPts(int pts){pointGoal = pts;}
 	int getGoalPts(){return pointGoal;}
 
-	void setCurrentPts(int pts){currentPoints = currentPoints + pts;}
+	void incCurrentPts(int pts){currentPoints = currentPoints + pts;}
 	int getCurrentPts(){return currentPoints;}
 
 	void incSelectionScore(int score){selectionScore = selectionScore + score;}
